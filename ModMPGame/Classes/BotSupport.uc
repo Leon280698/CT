@@ -4,7 +4,7 @@ class BotSupport extends AdminService native;
 
 var() config int            NumBots;             // Number of bots which are spawned when the game begins
 var() config float          BotAccuracy;
-var Array<MPBot>            Bots;
+var Array<TestBot>          Bots;
 var() config bool           bBotsCountAsPlayers; // If this is true, adding bots will increase the player count of the server
 
 var config bool             bAutoImportPaths;
@@ -81,8 +81,8 @@ function bool ExecCmd(String Cmd, optional PlayerController PC){
 	}else if(ParseCommand(Cmd, "SETBOTACCURACY")){
 		BotAccuracy = FClamp(float(Cmd), 0.0, 1.0);
 
-		for(i = 0; i < Bots.Length; ++i)
-			Bots[i].SetAccuracy(BotAccuracy);
+		//for(i = 0; i < Bots.Length; ++i)
+			//Bots[i].SetAccuracy(BotAccuracy);
 
 		return true;
 	}else if(ParseCommand(Cmd, "SPAWN")){
@@ -198,7 +198,7 @@ event SetupPatrolRoute(){
 }
 
 function AddBot(optional string Name, optional int Team){
-	local MPBot Bot;
+	local TestBot Bot;
 
 	if(bBotsCountAsPlayers && Level.Game.NumPlayers >= Level.Game.MaxPlayers){
 		Log("Game is full and bBotsCountAsPlayers == true");
@@ -206,17 +206,17 @@ function AddBot(optional string Name, optional int Team){
 		return;
 	}
 
-	Bot = Spawn(class'MPBot', self);
+	Bot = Spawn(class'TestBot', self);
 
 	if(Bot != None){
-		Bot.Accuracy = BotAccuracy;
+		//Bot.Accuracy = BotAccuracy;
 
 		if(Name == "")
 			Bot.PlayerReplicationInfo.PlayerName = "Bot" $ Bots.Length;
 		else
 			Bot.PlayerReplicationInfo.PlayerName = Name;
 
-		Bot.bCanGesture = false;
+		//Bot.bCanGesture = false;
 		Bot.ChosenSkin = Rand(5);
 		Bot.GotoState('Dead', 'MPStart');
 		Bots[Bots.Length] = Bot;

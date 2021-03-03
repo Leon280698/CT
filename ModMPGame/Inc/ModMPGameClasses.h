@@ -101,7 +101,7 @@ class MODMPGAME_API ABotSupport : public AAdminService
 public:
     INT NumBots;
     FLOAT BotAccuracy;
-    TArrayNoInit<class AMPBot*> Bots;
+    TArrayNoInit<class ATestBot*> Bots;
     BITFIELD bBotsCountAsPlayers:1 GCC_PACK(4);
     BITFIELD bAutoImportPaths:1;
     BITFIELD bAutoBuildPaths:1;
@@ -144,6 +144,15 @@ public:
 };
 
 
+class MODMPGAME_API ATestBot : public AScriptedController
+{
+public:
+    INT ChosenSkin;
+    DECLARE_CLASS(ATestBot,AScriptedController,0|CLASS_Config,ModMPGame)
+    NO_DEFAULT_CONSTRUCTOR(ATestBot)
+};
+
+
 class MODMPGAME_API APatrolPoint : public ANavigationPoint
 {
 public:
@@ -180,6 +189,7 @@ public:
 	AAdminService::StaticClass(); \
 	ABotSupport::StaticClass(); \
 	AMPBot::StaticClass(); \
+	ATestBot::StaticClass(); \
 	APatrolPoint::StaticClass(); \
 	ASmallNavigationPoint::StaticClass(); \
 	AInventorySpot::StaticClass(); \

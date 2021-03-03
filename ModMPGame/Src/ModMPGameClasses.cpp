@@ -41,6 +41,8 @@ FNativeEntry<AMPBot> AMPBot::StaticNativeMap[] = {
 };
 LINK_NATIVES(AMPBot);
 
+IMPLEMENT_CLASS(ATestBot);
+
 IMPLEMENT_CLASS(APatrolPoint);
 
 IMPLEMENT_CLASS(ASmallNavigationPoint);
