@@ -13,11 +13,15 @@ var array<string> CurrentCommands; // Only used as temporary storage when bPrint
 var FunctionOverride GameInfoPostLoginOverride;
 var FunctionOverride GameInfoLogoutOverride;
 
+var array<PlayerController> Players;
+
 native final function EventLog(coerce string Msg, name Event);
 native final function SaveStats(PlayerController PC);
 native final function RestoreStats(PlayerController PC);
 
 function GameInfoPostLogin(PlayerController NewPlayer){
+	Players[Players.Length] = NewPlayer;
+
 	Level.Game.PostLogin(NewPlayer);
 
 	EventLog(NewPlayer.PlayerReplicationInfo.PlayerName $ " entered the game", 'Join');
@@ -26,6 +30,7 @@ function GameInfoPostLogin(PlayerController NewPlayer){
 
 function GameInfoLogout(Controller Exiting){
 	local PlayerController PC;
+	local int i;
 
 	PC = PlayerController(Exiting);
 
@@ -34,6 +39,11 @@ function GameInfoLogout(Controller Exiting){
 
 		if(!Level.Game.bGameEnded) // No need to log this at the end of the game when all players leave automatically
 			EventLog(PC.PlayerReplicationInfo.PlayerName $ " left the game", 'Leave');
+
+		for(i = 0; i < Players.Length; ++i){
+			if(Players[i] == PC)
+				Players.Remove(i, 1);
+		}
 	}
 
 	Level.Game.Logout(Exiting);

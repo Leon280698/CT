@@ -546,6 +546,9 @@ UBOOL ABotSupport::Tick(FLOAT DeltaTime, ELevelTick TickType){
 		}
 	}
 
+	if(TickType == LEVELTICK_All)
+		ControllerTick(DeltaTime);
+
 	return Super::Tick(DeltaTime, TickType);
 
 	unguard;

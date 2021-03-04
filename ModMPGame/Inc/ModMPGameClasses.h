@@ -29,6 +29,7 @@ public:
     TArrayNoInit<FString> CurrentCommands GCC_PACK(4);
     class UFunctionOverride* GameInfoPostLoginOverride;
     class UFunctionOverride* GameInfoLogoutOverride;
+    TArrayNoInit<class APlayerController*> Players;
     void execEventLog(FFrame& Stack, void* Result);
     void execSaveStats(FFrame& Stack, void* Result);
     void execRestoreStats(FFrame& Stack, void* Result);
@@ -129,6 +130,11 @@ public:
 	virtual UBOOL Tick(FLOAT DeltaTime, ELevelTick TickType);
 	virtual void PostRender(class FLevelSceneNode* SceneNode, class FRenderInterface* RI);
 	virtual bool ExecCmd(const char* Cmd, class APlayerController* PC);
+
+	// Bot AI
+	void ControllerTick(FLOAT DeltaTime); // Implementation of controller features that are present in Unreal but were removed from RC
+	bool ControllerSeePawn(AController* C, APawn* Other, bool MaySkipChecks = true); // Check if this controller can see the specified pawn
+	void ControllerShowSelf(AController* C); // Show this controller to other's that can see its pawn
 };
 
 

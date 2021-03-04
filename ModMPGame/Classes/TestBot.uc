@@ -26,22 +26,45 @@ function ServerRestartPlayer(){
 		MPP.ChosenSkin = ChosenSkin;
 		MPP.DoCustomizations();
 		MPP.PatrolRoute = BotSupport(Owner).BotPatrolRoute;
-		GotoState('BotAI');
+		GotoState('Idle');
 	}
+}
+
+function StopFiring(){
+	if((Pawn != None) && (Pawn.Weapon != None) && Pawn.Weapon.IsFiring())
+		Pawn.Weapon.ServerStopFire();
+
+	bFire = 0;
+	bAltFire = 0;
 }
 
 /*
  * States
  */
 
-// Default state
-auto state BotAI{
-
+// Idle
+auto state Idle{
+	function SeePlayer(Pawn Seen){
+		log("SeePlayer: " $ GetHumanReadableName() $ " -> " $ Seen.GetHumanReadableName());
+	}
 }
 
 // Dead
 state Dead{
 	ignores SeePlayer, HearNoise, KilledBy;
+
+	function Timer(){}
+
+	function BeginState(){
+		if(Level.Game.TooManyBots(self)){
+			Destroy();
+
+			return;
+		}
+
+		Enemy = None;
+		StopFiring();
+	}
 
 Begin:
 	if(Level.Game.bGameEnded)
@@ -64,6 +87,8 @@ state GameEnded{
 
 	function BeginState(){
 		if(Pawn != None ){
+			StopFiring();
+
 			if(Pawn.Weapon != None)
 				Pawn.Weapon.HolderDied();
 

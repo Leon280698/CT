@@ -56,7 +56,7 @@
 	void EnableTurning(bool, bool, bool);
 	FVector GetFocusLocation();
 	FRotator GetFocusRotation();
-	unsigned long LineOfSightTo(class AActor*, int);
+	DWORD LineOfSightTo(class AActor* Other, int bUseLOSFlag = 0);
 	int SafeToShoot(class AActor*);
 	int SeeActor(class AActor*, int);
 	void SetFocus(const FRotator&);

@@ -276,6 +276,11 @@ cpptext
 	virtual UBOOL Tick(FLOAT DeltaTime, ELevelTick TickType);
 	virtual void PostRender(class FLevelSceneNode* SceneNode, class FRenderInterface* RI);
 	virtual bool ExecCmd(const char* Cmd, class APlayerController* PC);
+
+	// Bot AI
+	void ControllerTick(FLOAT DeltaTime); // Implementation of controller features that are present in Unreal but were removed from RC
+	bool ControllerSeePawn(AController* C, APawn* Other, bool MaySkipChecks = true); // Check if this controller can see the specified pawn
+	void ControllerShowSelf(AController* C); // Show this controller to other's that can see its pawn
 }
 
 defaultproperties

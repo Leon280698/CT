@@ -106,6 +106,9 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
+				RelativePath=".\Src\BotAI.cpp">
+			</File>
+			<File
 				RelativePath=".\Src\ModMPGame.cpp">
 			</File>
 			<File
