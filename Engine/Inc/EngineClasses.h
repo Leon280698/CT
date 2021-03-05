@@ -2211,6 +2211,120 @@ public:
 };
 
 /*
+ * TerrainInfo
+ */
+
+struct FNormalPair{
+	FVector Normal;
+	FVector Norma2;
+};
+
+enum ETexMapAxis{
+	TEXMAPAXIS_XY,
+	TEXMAPAXIS_XZ,
+	TEXMAPAXIS_YZ
+};
+
+enum ESortOrder{
+	SORT_NoSort,
+	SORT_BackToFront,
+	SORT_FrontToBack
+};
+
+struct FTerrainLayer{
+	class UMaterial* Texture;
+	class UTexture* AlphaMap;
+	FLOAT UScale;
+	FLOAT VScale;
+	FLOAT UPan;
+	FLOAT VPan;
+	BYTE TextureMapAxis;
+	FLOAT TextureRotation;
+	FRotator LayerRotation;
+	FMatrix TerrainMatrix;
+	FLOAT KFriction;
+	FLOAT KRestitution;
+	class UTexture* LayerWeightMap;
+};
+
+struct FDecorationLayer{
+	INT ShowOnTerrain;
+	class UTexture* ScaleMap;
+	class UTexture* DensityMap;
+	class UTexture* ColorMap;
+	class UStaticMesh* StaticMesh;
+	FRangeVector ScaleMultiplier;
+	FRange FadeoutRadius;
+	FRange DensityMultiplier;
+	INT MaxPerQuad;
+	INT Seed;
+	INT AlignToTerrain;
+	BYTE DrawOrder;
+	INT ShowOnInvisibleTerrain;
+	INT LitDirectional;
+	INT DisregardTerrainLighting;
+	INT RandomYaw;
+};
+
+struct FDecoInfo{
+	FVector Location;
+	FRotator Rotation;
+	FVector Scale;
+	FVector TempScale;
+	FColor Color;
+	INT Distance;
+};
+
+struct FDecoSectorInfo{
+	TArrayNoInit<FDecoInfo> DecoInfo;
+	FVector Location;
+	FLOAT Radius;
+};
+
+struct FDecorationLayerData{
+	TArrayNoInit<FDecoSectorInfo> Sectors;
+};
+
+class ENGINE_API ATerrainInfo : public AInfo{
+public:
+	DECLARE_CLASS(ATerrainInfo,AInfo,CLASS_RuntimeStatic,Engine)
+	NO_DEFAULT_CONSTRUCTOR(ATerrainInfo)
+
+	INT TerrainSectorSize;
+	class UTexture* TerrainMap;
+	FVector TerrainScale;
+	FTerrainLayer Layers[32];
+	TArrayNoInit<FDecorationLayer> DecoLayers;
+	FLOAT DecoLayerOffset;
+	BITFIELD Inverted:1;
+	BITFIELD bKCollisionHalfRes:1;
+	INT JustLoaded;
+	TArrayNoInit<FDecorationLayerData> DecoLayerData;
+	TArrayNoInit<class UTerrainSector*> Sectors;
+	TArrayNoInit<FVector> Vertices;
+	INT HeightmapX;
+	INT HeightmapY;
+	INT SectorsX;
+	INT SectorsY;
+	class UTerrainPrimitive* Primitive;
+	TArrayNoInit<FNormalPair> FaceNormals;
+	FVector ToWorld[4];
+	FVector ToHeightmap[4];
+	TArrayNoInit<INT> SelectedVertices;
+	INT ShowGrid;
+	TArrayNoInit<INT> QuadVisibilityBitmap;
+	TArrayNoInit<INT> EdgeTurnBitmap;
+	TArrayNoInit<class UMaterial*> QuadDomMaterialBitmap;
+	TArrayNoInit<INT> RenderCombinations;
+	TArrayNoInit<INT> VertexStreams;
+	TArrayNoInit<FColor> VertexColors;
+	TArrayNoInit<FColor> PaintedColor;
+	class UTexture* CollapsedLayers;
+	class UTexture* OldTerrainMap;
+	TArrayNoInit<BYTE> OldHeightmap;
+};
+
+/*
  * FluidSurfaceInfo
  */
 
