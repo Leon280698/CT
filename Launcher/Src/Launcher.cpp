@@ -40,11 +40,11 @@ static struct FExecHook : public FExec{
 			UObject* Found = NULL;
 
 			if(ParseObject<UClass>(Cmd, "Class=", Class, ANY_PACKAGE)){
-				AActor* Player = GEngine->Client->Viewports[0]->Actor;
+				APlayerController* Player = GEngine->Client->Viewports[0]->Actor;
 				FLOAT   MinDist = 999999.0f;
 
 				for(TObjectIterator<AActor> It; It; ++It){
-					FLOAT Dist = Player ? FDist(It->Location, Player->Location) : 0.0f;
+					FLOAT Dist = Player ? FDist(It->Location, Player->Pawn ? Player->Pawn->Location : Player->Location) : 0.0f;
 
 					if((!Player || It->GetLevel() == Player->GetLevel()) &&
 					   !It->bDeleteMe &&
