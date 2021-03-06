@@ -38,9 +38,10 @@ static struct FExecHook : public FExec{
 		}else if(ParseCommand(&Cmd, "EDITACTOR")){
 			UClass* Class;
 			UObject* Found = NULL;
+			FName ActorName;
+			APlayerController* Player = GEngine->Client->Viewports[0]->Actor;
 
 			if(ParseObject<UClass>(Cmd, "Class=", Class, ANY_PACKAGE)){
-				APlayerController* Player = GEngine->Client->Viewports[0]->Actor;
 				FLOAT   MinDist = 999999.0f;
 
 				for(TObjectIterator<AActor> It; It; ++It){
@@ -54,18 +55,16 @@ static struct FExecHook : public FExec{
 						Found   = *It;
 					}
 				}
-			}else{
-				FName ActorName;
+			}else if(Parse(Cmd, "Name=", ActorName)){
+				for(TObjectIterator<AActor> It; It; ++It){
+					if(!It->bDeleteMe && It->GetFName() == ActorName){
+						Found = *It;
 
-				if(Parse(Cmd, "Name=", ActorName)){
-					for(TObjectIterator<AActor> It; It; ++It){
-						if(!It->bDeleteMe && It->GetFName() == ActorName){
-							Found = *It;
-
-							break;
-						}
+						break;
 					}
 				}
+			}else if(Player){
+				Found = Player->Target;
 			}
 
 			if(Found){
