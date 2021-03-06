@@ -77,6 +77,15 @@ static struct FExecHook : public FExec{
 			}
 
 			return 1;
+		}else if(ParseCommand(&Cmd, "PREFERENCES")){
+			WConfigProperties* Preferences = new WConfigProperties("Preferences", LocalizeGeneral("AdvancedOptionsTitle", "Window"));
+
+			Preferences->OpenWindow((HWND)GEngine->Client->Viewports[0]->GetWindow());
+			Preferences->ForceRefresh();
+			Preferences->Show(1);
+			SetFocus(*Preferences);
+
+			return 1;
 		}else if(ParseCommand(&Cmd, "USERENDEV")){
 			FString RenderDeviceClass = Cmd;
 
