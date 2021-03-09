@@ -36,7 +36,7 @@ static struct FExecHook : public FExec, FNotifyHook{
 
 			if(Obj){
 				WObjectProperties* P = new WObjectProperties("EditObj", 0, "", NULL, 1);
-				P->OpenWindow((HWND)GEngine->Client->Viewports[0]->GetWindow());
+				P->OpenWindow(GLogWindow ? GLogWindow->hWnd : NULL);
 				P->Root.SetObjects(&Obj, 1);
 				P->Show(1);
 			}else{
@@ -78,7 +78,7 @@ static struct FExecHook : public FExec, FNotifyHook{
 
 			if(Found){
 				WObjectProperties* P = new WObjectProperties("EditActor", 0, "", NULL, 1);
-				P->OpenWindow((HWND)GEngine->Client->Viewports[0]->GetWindow());
+				P->OpenWindow(GLogWindow ? GLogWindow->hWnd : NULL);
 				P->Root.SetObjects((UObject**)&Found, 1);
 				P->Show(1);
 			}else{
@@ -90,7 +90,7 @@ static struct FExecHook : public FExec, FNotifyHook{
 			if(!Preferences){
 				Preferences = new WConfigProperties("Preferences", LocalizeGeneral("AdvancedOptionsTitle", "Window"));
 				Preferences->SetNotifyHook(this);
-				Preferences->OpenWindow((HWND)GEngine->Client->Viewports[0]->GetWindow());
+				Preferences->OpenWindow(GLogWindow ? GLogWindow->hWnd : NULL);
 				Preferences->ForceRefresh();
 			}
 
