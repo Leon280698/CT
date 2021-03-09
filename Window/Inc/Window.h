@@ -292,6 +292,7 @@ class WINDOW_API WWindow : public FCommandTarget{
 	FRect ClientToScreen(const FRect& InR);
 	FRect ScreenToClient(const FRect& InR);
 	FPoint GetCursorPos();
+	void SetNotifyHook(FNotifyHook* NotifyHook);
 
 	// Virtual functions
 	virtual ~WWindow();
@@ -1807,6 +1808,7 @@ class WINDOW_API WConfigProperties : public WProperties{
 
 	// Variables.
 	FConfigItem Root;
+	char        Padding[8]; // PADDING!
 
 	// Structors.
 	WConfigProperties(){}

@@ -7,8 +7,17 @@
 #include "../../Window/Inc/Window.h"
 #include "../../GameSpyMgr/Inc/GameSpyMgr.h"
 
-static struct FExecHook : public FExec{
-	UBOOL Exec(const TCHAR* Cmd, FOutputDevice& Ar){
+static struct FExecHook : public FExec, FNotifyHook{
+	WConfigProperties* Preferences;
+
+	FExecHook() : Preferences(NULL){}
+
+	virtual void NotifyDestroy(void* Src){
+		if(Src == Preferences)
+			Preferences = NULL;
+	}
+
+	virtual UBOOL Exec(const TCHAR* Cmd, FOutputDevice& Ar){
 		guard(FExecHook::Exec);
 
 		if(ParseCommand(&Cmd, "SHOWLOG")){
@@ -78,12 +87,15 @@ static struct FExecHook : public FExec{
 
 			return 1;
 		}else if(ParseCommand(&Cmd, "PREFERENCES")){
-			WConfigProperties* Preferences = new WConfigProperties("Preferences", LocalizeGeneral("AdvancedOptionsTitle", "Window"));
+			if(!Preferences){
+				Preferences = new WConfigProperties("Preferences", LocalizeGeneral("AdvancedOptionsTitle", "Window"));
+				Preferences->SetNotifyHook(this);
+				Preferences->OpenWindow((HWND)GEngine->Client->Viewports[0]->GetWindow());
+				Preferences->ForceRefresh();
+			}
 
-			Preferences->OpenWindow((HWND)GEngine->Client->Viewports[0]->GetWindow());
-			Preferences->ForceRefresh();
 			Preferences->Show(1);
-			SetFocus(*Preferences);
+			SetFocus(Preferences->hWnd);
 
 			return 1;
 		}else if(ParseCommand(&Cmd, "USERENDEV")){
