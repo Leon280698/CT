@@ -216,12 +216,10 @@ function AddBot(optional string Name, optional int Team){
 		else
 			Bot.PlayerReplicationInfo.PlayerName = Name;
 
-		//Bot.bCanGesture = false;
 		Bot.ChosenSkin = Rand(5);
 		Bot.GotoState('Dead', 'MPStart');
 		Bots[Bots.Length] = Bot;
-
-		BroadcastLocalizedMessage(Level.Game.GameMessageClass, 1, Bot.PlayerReplicationInfo);
+		Level.Game.bWelcomePending = true;
 
 		if(bBotsCountAsPlayers)
 			++Level.Game.NumPlayers;
