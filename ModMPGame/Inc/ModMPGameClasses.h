@@ -155,7 +155,7 @@ class MODMPGAME_API ATestBot : public AScriptedController
 public:
     INT ChosenSkin;
     DECLARE_CLASS(ATestBot,AScriptedController,0|CLASS_Config,ModMPGame)
-    NO_DEFAULT_CONSTRUCTOR(ATestBot)
+	virtual INT Tick(FLOAT DeltaTime, ELevelTick TickType);
 };
 
 

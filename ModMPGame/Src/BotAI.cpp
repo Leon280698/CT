@@ -17,13 +17,13 @@ void ABotSupport::ControllerTick(FLOAT DeltaTime){
 }
 
 bool ABotSupport::ControllerSeePawn(AController* C, APawn* Other, bool bMaySkipChecks){
-	if (!Other || !C->Pawn)
+	if(!Other || !C->Pawn)
 		return false;
 
-	if(Other != C->Enemy)
-		C->bLOSflag = !C->bLOSflag;
-	else
+	if(Other == C->Enemy)
 		return C->LineOfSightTo(Other) != 0;
+
+	C->bLOSflag = !C->bLOSflag;
 
 	APawn* Pawn = C->Pawn;
 	FLOAT maxdist = Pawn->SightRadius * Min(1.0f, (FLOAT)(Other->Visibility * 0.0078125f)); // * 1/128
@@ -35,7 +35,7 @@ bool ABotSupport::ControllerSeePawn(AController* C, APawn* Other, bool bMaySkipC
 	FLOAT dist = (Other->Location - Pawn->Location).Size();
 
 	// may skip if more than 1/5 of maxdist away (longer time to acquire)
-	if(bMaySkipChecks && (appFrand() * dist > 0.1f * maxdist) )
+	if(bMaySkipChecks && (appFrand() * dist > 0.1f * maxdist))
 		return false;
 
 	// check field of view
@@ -57,7 +57,7 @@ bool ABotSupport::ControllerSeePawn(AController* C, APawn* Other, bool bMaySkipC
 		// notice other pawns at very different heights more slowly
 		FLOAT heightMod = Abs(Other->Location.Z - Pawn->Location.Z);
 
-		if (appFrand() * dist < heightMod)
+		if(appFrand() * dist < heightMod)
 			return false;
 	}
 
@@ -69,4 +69,25 @@ void ABotSupport::ControllerShowSelf(AController* C){
 		if(Other != C && (Other->bIsPlayer || C->bIsPlayer) && Other->SightCounter < 0.0f && ControllerSeePawn(Other, C->Pawn))
 			Other->SeePlayer(C->Pawn);
 	}
+}
+
+INT ATestBot::Tick(FLOAT DeltaTime, ELevelTick TickType){
+	/*
+	 * This is really stupid but for some reason the movement code
+	 * doesn't update the Pawn's rotation on a dedicated server.
+	 * The only solution is to pretend we're in SP while calling UpdateMovementAnimation.
+	 */
+	if(Level->NetMode == NM_DedicatedServer &&
+	   Pawn &&
+	   !Pawn->bInterpolating &&
+	   Pawn->bPhysicsAnimUpdate &&
+	   Pawn->Mesh){
+		BYTE Nm = Level->NetMode;
+
+		Level->NetMode = NM_Standalone;
+		Pawn->UpdateMovementAnimation(DeltaTime);
+		Level->NetMode = Nm;
+	}
+
+	return Super::Tick(DeltaTime, TickType);
 }

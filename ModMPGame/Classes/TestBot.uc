@@ -46,7 +46,20 @@ function StopFiring(){
 auto state Idle{
 	function SeePlayer(Pawn Seen){
 		log("SeePlayer: " $ GetHumanReadableName() $ " -> " $ Seen.GetHumanReadableName());
+		Focus = Seen;
+		Target = Seen;
+		GotoState('Combat');
 	}
+}
+
+// Combat
+state Combat{
+Begin:
+	if(Pawn.Weapon.HasAmmo() && !Pawn.Weapon.IsFiring())
+		Pawn.Fire();
+
+	sleep(0);
+	Goto('Begin');
 }
 
 // Dead
@@ -103,6 +116,11 @@ state GameEnded{
 			UnPossess();
 		}
 	}
+}
+
+cpptext
+{
+	virtual INT Tick(FLOAT DeltaTime, ELevelTick TickType);
 }
 
 defaultproperties
