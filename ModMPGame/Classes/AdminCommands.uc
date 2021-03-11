@@ -162,6 +162,7 @@ function bool ExecCmd(String Cmd, optional PlayerController PC){
 
 				Log(CommandResult);
 				Level.Game.Broadcast(self, CommandResult);
+				AdminControl.SaveStats(PlayerController(C));
 
 				break;
 			}
@@ -184,6 +185,7 @@ function bool ExecCmd(String Cmd, optional PlayerController PC){
 
 				Log(CommandResult);
 				Level.Game.Broadcast(self, CommandResult);
+				AdminControl.SaveStats(PlayerController(C));
 
 				break;
 			}

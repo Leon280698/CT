@@ -22,10 +22,10 @@
 	Hardcoded names which are not messages.
 -----------------------------------------------------------------------------*/
 
-//Special zero value, meaning no name
+// Special zero value, meaning no name
 REG_NAME_HIGH(  0, None                         )
 
-//Class property types; these map straight onto hardcoded property types
+// Class property types; these map straight onto hardcoded property types
 REGISTER_NAME(  1, ByteProperty                 )
 REGISTER_NAME(  2, IntProperty                  )
 REGISTER_NAME(  3, BoolProperty                 )
@@ -42,13 +42,13 @@ REGISTER_NAME( 13, StrProperty                  )
 REGISTER_NAME( 14, MapProperty                  )
 REGISTER_NAME( 15, FixedArrayProperty           )
 
-//Packages
+// Packages
 REGISTER_NAME( 20, Core                         )
 REGISTER_NAME( 21, Engine                       )
 REGISTER_NAME( 22, Editor                       )
 REGISTER_NAME( 23, Gameplay                     )
 
-//UnrealScript types
+// UnrealScript types
 REG_NAME_HIGH( 80, Byte                         )
 REG_NAME_HIGH( 81, Int                          )
 REG_NAME_HIGH( 82, Bool                         )
@@ -63,7 +63,7 @@ REG_NAME_HIGH( 91, Plane                        )
 REG_NAME_HIGH( 92, Button                       )
 REG_NAME_HIGH( 93, CompressedPosition           )
 
-//Keywords
+// Keywords
 REGISTER_NAME(100, Begin                        )
 REG_NAME_HIGH(102, State                        )
 REG_NAME_HIGH(103, Function                     )
@@ -78,7 +78,7 @@ REG_NAME_HIGH(120, Reliable                     )
 REG_NAME_HIGH(121, Unreliable                   )
 REG_NAME_HIGH(122, Always                       )
 
-//Object class names
+// Object class names
 REGISTER_NAME(150, Field                        )
 REGISTER_NAME(151, Object                       )
 REGISTER_NAME(152, TextBuffer                   )
@@ -94,21 +94,21 @@ REGISTER_NAME(161, Property                     )
 REGISTER_NAME(162, Camera                       )
 REGISTER_NAME(163, PlayerInput                  )
 
-//Creation and destruction
+// Creation and destruction
 REGISTER_NAME(300, Spawned                      )
 REGISTER_NAME(301, Destroyed                    )
 
-//Gaining/losing actors
+// Gaining/losing actors
 REGISTER_NAME(302, GainedChild                  )
 REGISTER_NAME(303, LostChild                    )
 REGISTER_NAME(304, Probe4                       )
 REGISTER_NAME(305, Probe5                       )
 
-//Triggers
+// Triggers
 REGISTER_NAME(306, Trigger                      )
 REGISTER_NAME(307, UnTrigger                    )
 
-//Physics & world interaction
+// Physics & world interaction
 REGISTER_NAME(308, Timer                        )
 REGISTER_NAME(309, HitWall                      )
 REGISTER_NAME(310, Falling                      )
@@ -138,12 +138,12 @@ REGISTER_NAME(333, MayFall                      )
 REGISTER_NAME(334, CheckDirectionChange         )
 REGISTER_NAME(335, PawnLeavingVolume            )
 
-//Updates
+// Updates
 REGISTER_NAME(336, Tick                         )
 REGISTER_NAME(337, PlayerTick                   )
 REGISTER_NAME(338, ModifyVelocity               )
 
-//AI
+// AI
 REGISTER_NAME(339, CheckMovementTransition      )
 REGISTER_NAME(340, SeePlayer                    )
 REGISTER_NAME(342, HearNoise                    )
@@ -166,20 +166,20 @@ REGISTER_NAME(360, ActorEnteredVolume           )
 REGISTER_NAME(361, ActorLeavingVolume           )
 REGISTER_NAME(362, PrepareForMove               )
 
-//Special tag meaning 'All probes'
+// Special tag meaning 'All probes'
 REGISTER_NAME(363, All                          )
 
 REGISTER_NAME(364, SceneStarted                 )
 REGISTER_NAME(365, SceneEnded                   )
 
-//Constants
+// Constants
 REG_NAME_HIGH(600, Vect                         )
 REG_NAME_HIGH(601, Rot                          )
 REG_NAME_HIGH(605, ArrayCount                   )
 REG_NAME_HIGH(606, EnumCount                    )
 REG_NAME_HIGH(607, Rng                          )
 
-//Flow control
+// Flow control
 REG_NAME_HIGH(620, Else                         )
 REG_NAME_HIGH(621, If                           )
 REG_NAME_HIGH(622, Goto                         )
@@ -196,7 +196,7 @@ REG_NAME_HIGH(633, Case                         )
 REG_NAME_HIGH(634, Default                      )
 REG_NAME_HIGH(635, Continue                     )
 
-//Variable overrides
+// Variable overrides
 REG_NAME_HIGH(640, Private                      )
 REG_NAME_HIGH(641, Const                        )
 REG_NAME_HIGH(642, Out                          )
@@ -225,7 +225,7 @@ REG_NAME_HIGH(666, PCOnly                       )
 REG_NAME_HIGH(667, Align                        )
 REG_NAME_HIGH(668, AutoLoad                     )
 
-//Class overrides
+// Class overrides
 REG_NAME_HIGH(671, Intrinsic                    )
 REG_NAME_HIGH(672, Within                       )
 REG_NAME_HIGH(673, Abstract                     )
@@ -246,22 +246,22 @@ REG_NAME_HIGH(687, ShowCategories               )
 REG_NAME_HIGH(688, CollapseCategories           )
 REG_NAME_HIGH(689, DontCollapseCategories       )
 
-//State overrides
+// State overrides
 REG_NAME_HIGH(690, Auto                         )
 REG_NAME_HIGH(691, Ignores                      )
 
-//???
+// Auto-instanced subobjects
 REG_NAME_HIGH(692, Instanced                    )
 
-//Calling overrides
+// Calling overrides
 REG_NAME_HIGH(695, Global                       )
 REG_NAME_HIGH(696, Super                        )
 REG_NAME_HIGH(697, Outer                        )
 
-//Also class overrides I guess?
+// Class overrides
 REG_NAME_HIGH(698, DependsOn                    )
 
-//Function Overrides
+// Function Overrides
 REG_NAME_HIGH(700, Operator                     )
 REG_NAME_HIGH(701, PreOperator                  )
 REG_NAME_HIGH(702, PostOperator                 )
@@ -278,27 +278,25 @@ REG_NAME_HIGH(712, Native                       )
 REG_NAME_HIGH(713, Invariant                    )
 REG_NAME_HIGH(714, Delegate                     )
 
-//Variable overrides
+// Variable overrides
 REG_NAME_HIGH(720, Var                          )
 REG_NAME_HIGH(721, Local                        )
 REG_NAME_HIGH(722, Import                       )
-
-//???
 REG_NAME_HIGH(723, From                         )
 
-//Special commands
+// Special commands
 REG_NAME_HIGH(730, Spawn                        )
 REG_NAME_HIGH(731, Array                        )
 REG_NAME_HIGH(732, Map                          )
 
-//Misc
+// Misc
 REGISTER_NAME(740, Tag                          )
 REGISTER_NAME(742, Role                         )
 REGISTER_NAME(743, RemoteRole                   )
 REGISTER_NAME(744, System                       )
 REGISTER_NAME(745, User                         )
 
-//Log messages
+// Log messages
 REGISTER_NAME(760, Log                          )
 REGISTER_NAME(761, Critical                     )
 REGISTER_NAME(762, Init                         )
@@ -336,7 +334,7 @@ REGISTER_NAME(793, Progress                     )
 REGISTER_NAME(794, UserPrompt                   )
 REGISTER_NAME(795, AILog                        )
 
-//Console text colors
+// Console text colors
 REGISTER_NAME(800, White                        )
 REGISTER_NAME(801, Black                        )
 REGISTER_NAME(802, Red                          )
@@ -347,7 +345,7 @@ REGISTER_NAME(806, Magenta                      )
 REGISTER_NAME(807, Yellow                       )
 REGISTER_NAME(808, DefaultColor                 )
 
-//Misc
+// Misc
 REGISTER_NAME(820, KeyType                      )
 REGISTER_NAME(821, KeyEvent                     )
 REGISTER_NAME(822, Write                        )
@@ -395,6 +393,8 @@ REGISTER_NAME(864, MenuMovie                    )
 REGISTER_NAME(865, CloseMenu                    )
 REGISTER_NAME(866, HandleInputBack              )
 REGISTER_NAME(867, DrawMenu                     )
+
+// Animation sequence names
 REGISTER_NAME(868, MeleeAttack                  )
 REGISTER_NAME(869, MeleeAttack2                 )
 REGISTER_NAME(870, Lunge                        )
@@ -447,8 +447,14 @@ REGISTER_NAME(916, WallStandReturnLeft          )
 REGISTER_NAME(917, WallStandReturnRight         )
 REGISTER_NAME(918, BleedOut                     )
 REGISTER_NAME(919, ForceName                    )
+
+// Dummy name for ingame objects to avoid allocating tons of unique names
 REGISTER_NAME(920, InGameTempName               )
+
+// NoAutoLoad
 REGISTER_NAME(921, NoAutoLoad                   )
+
+// Animation sequence names
 REGISTER_NAME(922, Load                         )
 REGISTER_NAME(923, Holster                      )
 REGISTER_NAME(924, EyeBlink                     )

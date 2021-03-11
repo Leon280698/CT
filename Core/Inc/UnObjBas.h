@@ -84,21 +84,10 @@ enum EClassFlags{
 	CLASS_IsAUBoolProperty   = 0x00020000, // IsA UBoolProperty
 	CLASS_IsAUState          = 0x00040000, // IsA UState
 	CLASS_IsAUFunction       = 0x00080000, // IsA UFunction
-
 	CLASS_NeedsDefProps      = 0x00100000, // Class needs its defaultproperties imported
-	CLASS_HasComponents      = 0x00400000, // Class has component properties.
-
-	CLASS_Hidden             = 0x00800000, // Don't show this class in the editor class browser or edit inline new menus.
-	CLASS_Deprecated         = 0x01000000, // Don't save objects of this class when serializing
+	CLASS_AutoInstancedProps = 0x00200000, // Object properties of this class are auto-CPF_NeedCtorLink'd (ie instanced on duplicate).
+	CLASS_NoAutoLoad         = 0x01000000,
 	CLASS_HideDropDown       = 0x02000000, // Class not shown in editor drop down for class selection
-
-	CLASS_Exported           = 0x04000000, // Class has been exported to a header file
-
-
-	// Flags to inherit from base class.
-	CLASS_Inherit         = CLASS_Transient | CLASS_Config | CLASS_Localized | CLASS_SafeReplace | CLASS_RuntimeStatic | CLASS_PerObjectConfig | CLASS_Placeable | CLASS_IsAUProperty | CLASS_IsAUObjectProperty | CLASS_IsAUBoolProperty | CLASS_IsAUState | CLASS_IsAUFunction | CLASS_HasComponents | CLASS_Deprecated,
-	CLASS_RecompilerClear = CLASS_Inherit | CLASS_Abstract | CLASS_NoExport | CLASS_NativeReplication,
-	CLASS_ScriptInherit   = CLASS_Inherit | CLASS_EditInlineNew | CLASS_CollapseCategories
 };
 
 /*
@@ -139,58 +128,46 @@ enum EPropertyFlags{
 	CPF_EditInlineUse    = 0x10000000, // EditInline with Use button.
 	CPF_Deprecated       = 0x20000000, // Property is deprecated.  Read it from an archive, but don't save it.
 	CPF_EditInlineNotify = 0x40000000, // EditInline, notify outer object on editor change.
-
-	// Combinations of flags.
-	CPF_ParmFlags             = CPF_OptionalParm | CPF_Parm | CPF_OutParm | CPF_SkipParm | CPF_ReturnParm | CPF_CoerceParm,
-	CPF_PropagateFromStruct   = CPF_Const | CPF_Native | CPF_Transient,
-	CPF_PropagateToArrayInner = CPF_ExportObject | CPF_EditInline | CPF_EditInlineUse | CPF_EditInlineNotify | CPF_Localized
 };
 
 /*
  * Flags describing an object instance.
  */
 enum EObjectFlags{
-	RF_Transactional   = 0x00000001, // Object is transactional.
-	RF_Unreachable     = 0x00000002, // Object is not reachable on the object graph.
-	RF_Public          = 0x00000004, // Object is visible outside its package.
-	RF_TagImp          = 0x00000008, // Temporary import tag in load/save.
-	RF_TagExp          = 0x00000010, // Temporary export tag in load/save.
-	RF_SourceModified  = 0x00000020, // Modified relative to source files.
-	RF_TagGarbage      = 0x00000040, // Check during garbage collection.
-	//
-	//
-	RF_NeedLoad        = 0x00000200, // During load, indicates object needs loading.
-	RF_HighlightedName = 0x00000400, // A hardcoded name which should be syntax-highlighted.
-	RF_EliminateObject = 0x00000400, // NULL out references to this during garbage collecion.
-	RF_InSingularFunc  = 0x00000800, // In a singular function.
-	RF_RemappedName    = 0x00000800, // Name is remapped.
-	RF_Suppress        = 0x00001000, // warning: Mirrored in UnName.h. Suppressed log name.
-	RF_StateChanged    = 0x00001000, // Object did a state change.
-	RF_InEndState      = 0x00002000, // Within an EndState call.
-	RF_Transient       = 0x00004000, // Don't save object.
-	RF_Preloading      = 0x00008000, // Data is being preloaded from file.
-	RF_LoadForClient   = 0x00010000, // In-file load for client.
-	RF_LoadForServer   = 0x00020000, // In-file load for client.
-	RF_LoadForEdit     = 0x00040000, // In-file load for client.
-	RF_Standalone      = 0x00080000, // Keep object around for editing even if unreferenced.
-	RF_NotForClient    = 0x00100000, // Don't load this object for the game client.
-	RF_NotForServer    = 0x00200000, // Don't load this object for the game server.
-	RF_NotForEdit      = 0x00400000, // Don't load this object for the editor.
-	RF_Destroyed       = 0x00800000, // Object Destroy has already been called.
-	RF_NeedPostLoad    = 0x01000000, // Object needs to be postloaded.
-	RF_HasStack        = 0x02000000, // Has execution stack.
-	RF_Native          = 0x04000000, // Native (UClass only).
-	RF_Marked          = 0x08000000, // Marked (for debugging).
-	RF_ErrorShutdown   = 0x10000000, // ShutdownAfterError called.
-	RF_DebugPostLoad   = 0x20000000, // For debugging Serialize calls.
-	RF_DebugSerialize  = 0x40000000, // For debugging Serialize calls.
-	RF_DebugDestroy	   = 0x80000000, // For debugging Destroy calls.
-
-	RF_ContextFlags     = RF_NotForClient | RF_NotForServer | RF_NotForEdit, // All context flags.
-	RF_LoadContextFlags = RF_LoadForClient | RF_LoadForServer | RF_LoadForEdit, // Flags affecting loading.
-	RF_Load             = RF_ContextFlags | RF_LoadContextFlags | RF_Public | RF_Standalone | RF_Native | RF_SourceModified | RF_Transactional | RF_HasStack, // Flags to load from Unrealfiles.
-	RF_Keep             = RF_Native | RF_Marked, // Flags to persist across loads.
-	RF_ScriptMask       = RF_Transactional | RF_Public | RF_Transient | RF_NotForClient | RF_NotForServer | RF_NotForEdit // Script-accessible flags.
+	RF_Transactional      = 0x00000001, // Object is transactional.
+	RF_Unreachable        = 0x00000002, // Object is not reachable on the object graph.
+	RF_Public             = 0x00000004, // Object is visible outside its package.
+	RF_TagImp             = 0x00000008, // Temporary import tag in load/save.
+	RF_TagExp             = 0x00000010, // Temporary export tag in load/save.
+	RF_SourceModified     = 0x00000020, // Modified relative to source files.
+	RF_TagGarbage         = 0x00000040, // Check during garbage collection.
+	RF_PerObjectLocalized = 0x00000100, // Object is localized by instance name, not by class.
+	RF_NeedLoad           = 0x00000200, // During load, indicates object needs loading.
+	RF_HighlightedName    = 0x00000400, // A hardcoded name which should be syntax-highlighted.
+	RF_EliminateObject    = 0x00000400, // NULL out references to this during garbage collecion.
+	RF_InSingularFunc     = 0x00000800, // In a singular function.
+	RF_RemappedName       = 0x00000800, // Name is remapped.
+	RF_Suppress           = 0x00001000, // warning: Mirrored in UnName.h. Suppressed log name.
+	RF_StateChanged       = 0x00001000, // Object did a state change.
+	RF_InEndState         = 0x00002000, // Within an EndState call.
+	RF_Transient          = 0x00004000, // Don't save object.
+	RF_Preloading         = 0x00008000, // Data is being preloaded from file.
+	RF_LoadForClient      = 0x00010000, // In-file load for client.
+	RF_LoadForServer      = 0x00020000, // In-file load for client.
+	RF_LoadForEdit        = 0x00040000, // In-file load for client.
+	RF_Standalone         = 0x00080000, // Keep object around for editing even if unreferenced.
+	RF_NotForClient       = 0x00100000, // Don't load this object for the game client.
+	RF_NotForServer       = 0x00200000, // Don't load this object for the game server.
+	RF_NotForEdit         = 0x00400000, // Don't load this object for the editor.
+	RF_Destroyed          = 0x00800000, // Object Destroy has already been called.
+	RF_NeedPostLoad       = 0x01000000, // Object needs to be postloaded.
+	RF_HasStack           = 0x02000000, // Has execution stack.
+	RF_Native             = 0x04000000, // Native (UClass only).
+	RF_Marked             = 0x08000000, // Marked (for debugging).
+	RF_ErrorShutdown      = 0x10000000, // ShutdownAfterError called.
+	RF_DebugPostLoad      = 0x20000000, // For debugging Serialize calls.
+	RF_DebugSerialize     = 0x40000000, // For debugging Serialize calls.
+	RF_DebugDestroy	      = 0x80000000, // For debugging Destroy calls.
 };
 
 /*----------------------------------------------------------------------------
@@ -206,23 +183,14 @@ public:
 
 	FGuid(){}
 	FGuid(DWORD InA, DWORD InB, DWORD InC, DWORD InD) : A(InA),
-														B(InB),
-														C(InC),
-														D(InD){}
+	                                                    B(InB),
+	                                                    C(InC),
+	                                                    D(InD){}
 	friend UBOOL operator==(const FGuid& X, const FGuid& Y){ return X.A == Y.A && X.B == Y.B && X.C == Y.C && X.D == Y.D; }
 	friend UBOOL operator!=(const FGuid& X, const FGuid& Y){ return X.A != Y.A || X.B != Y.B || X.C != Y.C || X.D != Y.D;}
-	friend FArchive& operator<<(FArchive& Ar, FGuid& G){
-		guard(FGuid<<);
-		return Ar << G.A << G.B << G.C << G.D;
-		unguard;
-	}
-	TCHAR* String() const{
-		TCHAR* Result = appStaticString1024();
+	friend FArchive& operator<<(FArchive& Ar, FGuid& G){ return Ar << G.A << G.B << G.C << G.D; }
 
-		appSprintf(Result, "%08X%08X%08X%08X", A, B, C, D);
-
-		return Result;
-	}
+	TCHAR* String() const;
 };
 
 inline INT CompareGuids(FGuid* A, FGuid* B){
@@ -263,10 +231,10 @@ public:
 	FString Autodetect;
 
 	FRegistryObjectInfo() : Object(),
-							Class(),
-							MetaClass(),
-							Description(),
-							Autodetect(){}
+	                        Class(),
+	                        MetaClass(),
+	                        Description(),
+	                        Autodetect(){}
 };
 
 /*
@@ -281,10 +249,10 @@ public:
 	UBOOL Immediate;
 
 	FPreferencesInfo() : Caption(),
-						 ParentCaption(),
-						 Class(),
-						 Category(NAME_None),
-						 Immediate(0){}
+	                     ParentCaption(),
+	                     Class(),
+	                     Category(NAME_None),
+	                     Immediate(0){}
 };
 
 /*----------------------------------------------------------------------------
@@ -464,8 +432,9 @@ private:
 	static TArray<UObject*>            GObjRegistrants;        // Registrants during ProcessRegistrants call.
 	static TArray<FPreferencesInfo>    GObjPreferences;        // Prefereces cache.
 	static TArray<FRegistryObjectInfo> GObjDrivers;            // Drivers cache.
-	static TMultiMap<FName,FName>*     GObjPackageRemap;       // Remap table for loading renamed packages.
+	static TMultiMap<FName, FName>*    GObjPackageRemap;       // Remap table for loading renamed packages.
 	static TCHAR                       GLanguage[64];
+	static INT                         GObjHighWatermark;
 
 	// Private functions.
 	void AddObject(INT Index);
@@ -704,26 +673,20 @@ T* GetDefault(){
 class FObjectIterator{
 public:
 	FObjectIterator(UClass* InClass = UObject::StaticClass()) : Class(InClass),
-																Index(-1){
+                                                                Index(-1){
 		check(Class);
 		++*this;
 	}
 
 	void operator++(){
-		while(++Index < UObject::GObjObjects.Num() && (!UObject::GObjObjects[Index] || !UObject::GObjObjects[Index]->IsA(Class)));
+		do{
+			++Index;
+		}while(Index < UObject::GObjObjects.Num() && (!UObject::GObjObjects[Index] || !UObject::GObjObjects[Index]->IsA(Class)));
 	}
 
-	UObject* operator*(){
-		return UObject::GObjObjects[Index];
-	}
-
-	UObject* operator->(){
-		return UObject::GObjObjects[Index];
-	}
-
-	operator UBOOL(){
-		return Index < UObject::GObjObjects.Num();
-	}
+	UObject* operator*(){ return UObject::GObjObjects[Index]; }
+	UObject* operator->(){ return UObject::GObjObjects[Index]; }
+	operator UBOOL(){ return Index < UObject::GObjObjects.Num(); }
 
 protected:
 	UClass* Class;
@@ -739,13 +702,8 @@ class TObjectIterator : public FObjectIterator{
 public:
 	TObjectIterator() : FObjectIterator(T::StaticClass()){}
 
-	T* operator*(){
-		return static_cast<T*>(FObjectIterator::operator*());
-	}
-
-	T* operator->(){
-		return static_cast<T*>(FObjectIterator::operator->());
-	}
+	T* operator*(){ return static_cast<T*>(FObjectIterator::operator*()); }
+	T* operator->(){ return static_cast<T*>(FObjectIterator::operator->()); }
 };
 
 /*----------------------------------------------------------------------------

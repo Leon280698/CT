@@ -17,52 +17,13 @@
 
 
 
-class MODMPGAME_API AAdminControl : public AActor
-{
-public:
-    TArrayNoInit<FString> ServiceClasses;
-    TArrayNoInit<class AAdminService*> Services;
-    FStringNoInit EventLogFile;
-    BITFIELD AppendEventLog:1 GCC_PACK(4);
-    BITFIELD EventLogTimestamp:1;
-    BITFIELD bPrintCommands:1;
-    TArrayNoInit<FString> CurrentCommands GCC_PACK(4);
-    class UFunctionOverride* GameInfoPostLoginOverride;
-    class UFunctionOverride* GameInfoLogoutOverride;
-    TArrayNoInit<class APlayerController*> Players;
-    void execEventLog(FFrame& Stack, void* Result);
-    void execSaveStats(FFrame& Stack, void* Result);
-    void execRestoreStats(FFrame& Stack, void* Result);
-    UBOOL ExecCmd(FString const& Cmd, class APlayerController* PC)
-    {
-        DECLARE_NAME(ExecCmd);
-        struct {
-            FString Cmd;
-            class APlayerController* PC;
-            UBOOL ReturnValue;
-        } Parms;
-        Parms.Cmd=Cmd;
-        Parms.PC=PC;
-        Parms.ReturnValue=0;
-        ProcessEvent(NExecCmd, &Parms);
-        return Parms.ReturnValue;
-    }
-    DECLARE_CLASS(AAdminControl,AActor,0|CLASS_Config,ModMPGame)
-	// Overrides
-	virtual void Spawned();
-	virtual void Destroy();
-
-	void EventLog(const TCHAR* Msg, FName Event);
-    DECLARE_NATIVES(AAdminControl)
-};
-
-
 class MODMPGAME_API AAdminService : public AActor
 {
 public:
     class UClass* RelevantGameInfoClass;
     BITFIELD bRequiresAdminPermissions:1 GCC_PACK(4);
     class AAdminControl* AdminControl GCC_PACK(4);
+    class AAdminService* nextAdminService;
     void execParseCommand(FFrame& Stack, void* Result);
     void execParseToken(FFrame& Stack, void* Result);
     void execParseIntParam(FFrame& Stack, void* Result);
@@ -159,6 +120,44 @@ public:
 };
 
 
+class MODMPGAME_API AAdminControl : public AGameStats
+{
+public:
+    TArrayNoInit<FString> ServiceClasses;
+    FStringNoInit EventLogFile;
+    BITFIELD AppendEventLog:1 GCC_PACK(4);
+    BITFIELD EventLogTimestamp:1;
+    BITFIELD DoStatLogging:1;
+    BITFIELD bPrintCommands:1;
+    TArrayNoInit<FString> CurrentCommands GCC_PACK(4);
+    class AAdminService* Services;
+    void execEventLog(FFrame& Stack, void* Result);
+    void execSaveStats(FFrame& Stack, void* Result);
+    void execRestoreStats(FFrame& Stack, void* Result);
+    UBOOL ExecCmd(FString const& Cmd, class APlayerController* PC)
+    {
+        DECLARE_NAME(ExecCmd);
+        struct {
+            FString Cmd;
+            class APlayerController* PC;
+            UBOOL ReturnValue;
+        } Parms;
+        Parms.Cmd=Cmd;
+        Parms.PC=PC;
+        Parms.ReturnValue=0;
+        ProcessEvent(NExecCmd, &Parms);
+        return Parms.ReturnValue;
+    }
+    DECLARE_CLASS(AAdminControl,AGameStats,0|CLASS_Config,ModMPGame)
+	// Overrides
+	virtual void Spawned();
+	virtual void Destroy();
+
+	void EventLog(const TCHAR* Msg, FName Event);
+    DECLARE_NATIVES(AAdminControl)
+};
+
+
 class MODMPGAME_API APatrolPoint : public ANavigationPoint
 {
 public:
@@ -191,11 +190,11 @@ public:
 #if __STATIC_LINK
 
 #define AUTO_INITIALIZE_REGISTRANTS_MODMPGAME \
-	AAdminControl::StaticClass(); \
 	AAdminService::StaticClass(); \
 	ABotSupport::StaticClass(); \
 	AMPBot::StaticClass(); \
 	ATestBot::StaticClass(); \
+	AAdminControl::StaticClass(); \
 	APatrolPoint::StaticClass(); \
 	ASmallNavigationPoint::StaticClass(); \
 	AInventorySpot::StaticClass(); \

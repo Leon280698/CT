@@ -90,7 +90,6 @@ void AAdminControl::Spawned(){
 	AdminControlEventLog.Unbuffered = 1;
 	AdminControlEventLog.Timestamp = EventLogTimestamp;
 	AdminControlEventLog.CallLogHook = 0;
-	AdminControlEventLog.Logf(NAME_Init, "(Map): %s", Level->GetOuter()->GetName());
 
 	// Restore admins from previous round so they don't have to login again
 
@@ -129,10 +128,10 @@ void AAdminControl::EventLog(const TCHAR* Msg, FName Event){
 
 void AAdminControl::execEventLog(FFrame& Stack, void* Result){
 	P_GET_STR(Msg);
-	P_GET_NAME(Event);
+	P_GET_NAME(Tag);
 	P_FINISH;
 
-	EventLog(*Msg, Event);
+	EventLog(*Msg, Tag);
 }
 
 void AAdminControl::execSaveStats(FFrame& Stack, void* Result){

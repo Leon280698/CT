@@ -6,6 +6,7 @@ var() static config class<GameInfo> RelevantGameInfoClass;
 var() bool bRequiresAdminPermissions; // Commands are only forwarded to the service if the issuer is logged in as an administrator
 
 var AdminControl AdminControl;
+var AdminService nextAdminService;
 
 native static final function bool ParseCommand(out string Stream, string Match);
 native static final function string ParseToken(out string Stream);

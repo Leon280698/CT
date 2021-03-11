@@ -1,66 +1,54 @@
-class AdminControl extends Actor native config(ModMPGame);
+class AdminControl extends GameStats native config(ModMPGame);
 
 var() config array<String> ServiceClasses;
-var array<AdminService>    Services;
 
 var() config string EventLogFile;
 var() config bool   AppendEventLog;
 var() config bool   EventLogTimestamp;
+var() config bool   DoStatLogging;
 
 var bool          bPrintCommands;  // Commands are not executed but instead displayed (e.g. when the 'help' command is used)
 var array<string> CurrentCommands; // Only used as temporary storage when bPrintCommands == true
+var AdminService  Services;        // Linked list of all currently active services
 
-var FunctionOverride GameInfoPostLoginOverride;
-var FunctionOverride GameInfoLogoutOverride;
-
-var array<PlayerController> Players;
-
-native final function EventLog(coerce string Msg, name Event);
+native final function EventLog(coerce string Msg, name Tag);
 native final function SaveStats(PlayerController PC);
 native final function RestoreStats(PlayerController PC);
 
-function GameInfoPostLogin(PlayerController NewPlayer){
-	Players[Players.Length] = NewPlayer;
-
-	Level.Game.PostLogin(NewPlayer);
-
-	EventLog(NewPlayer.PlayerReplicationInfo.PlayerName $ " entered the game", 'Join');
-	RestoreStats(NewPlayer);
+function Init(){
+	if(DoStatLogging)
+		Super.Init();
 }
 
-function GameInfoLogout(Controller Exiting){
-	local PlayerController PC;
-	local int i;
+function ConnectEvent(PlayerReplicationInfo Who){
+	EventLog(Who.PlayerName $ " entered the game", 'Join');
+	RestoreStats(PlayerController(Who.Owner));
+	Super.ConnectEvent(Who);
+}
 
-	PC = PlayerController(Exiting);
-
-	if(PC != None){
-		SaveStats(PC);
-
-		if(!Level.Game.bGameEnded) // No need to log this at the end of the game when all players leave automatically
-			EventLog(PC.PlayerReplicationInfo.PlayerName $ " left the game", 'Leave');
-
-		for(i = 0; i < Players.Length; ++i){
-			if(Players[i] == PC)
-				Players.Remove(i, 1);
-		}
-	}
-
-	Level.Game.Logout(Exiting);
+function DisconnectEvent(PlayerReplicationInfo Who){
+	EventLog(Who.PlayerName $ " left the game", 'Leave');
+	SaveStats(PlayerController(Who.Owner));
+	Super.DisconnectEvent(Who);
 }
 
 function PostBeginPlay(){
 	local int i;
-	local Class<AdminService> ServiceClass;
+	local class<AdminService> ServiceClass;
 	local AdminService Service;
 
-	GameInfoPostLoginOverride = new class'FunctionOverride';
-	GameInfoPostLoginOverride.Init(Level.Game, 'PostLogin', self, 'GameInfoPostLogin');
-	GameInfoLogoutOverride = new class'FunctionOverride';
-	GameInfoLogoutOverride.Init(Level.Game, 'Logout', self, 'GameInfoLogout');
+	if(Level.Game.GameStats != None && Level.Game.GameStats != self){
+		Warn("GameStats will be replaced by AdminControl!");
+	}else if(Level.Game.GameStats.IsA('AdminControl')){
+		Destroy();
 
-	SaveConfig();
+		return;
+	}
 
+	EventLog(GetMapFileName(), 'Map');
+	SaveConfig(); // Create config if it doesn't exist
+
+	Level.Game.GameStats = self;
 	Level.Game.bAdminCanPause = false;
 	Level.Game.BroadcastHandlerClass = "ModMPGame.AdminControlBroadcastHandler";
 	Level.Game.AccessControlClass = "ModMPGame.AdminAccessControl";
@@ -99,32 +87,33 @@ function PostBeginPlay(){
 		}
 
 		Service.AdminControl = self;
-		Services[Services.Length] = Service;
+		Service.nextAdminService = Services;
+		Services = Service;
 	}
 }
 
 function bool DispatchCmd(PlayerController PC, string Cmd){
 	local int i;
-	local int j;
+	local AdminService Service;
 	local int NumLines;
 	local bool RecognizedCmd;
 	local bool bAdmin;
 
 	bAdmin = PC == None || PC.PlayerReplicationInfo.bAdmin;
 
-	for(i = 0; i < Services.Length; ++i){
-		if(Services[i].bRequiresAdminPermissions && !bAdmin)
+	for(Service = Services; Service != None; Service = Service.nextAdminService){
+		if(Service.bRequiresAdminPermissions && !bAdmin)
 			continue;
 
-		if(Services[i].ExecCmd(Cmd, PC))
+		if(Service.ExecCmd(Cmd, PC))
 			RecognizedCmd = true;
 
 		if(CurrentCommands.Length > 0){ // 'help' command was used, so display the list of commands
-			Services[i].CommandFeedback(PC, string(Services[i].Class.Name) $ ":", PC != None);
+			Service.CommandFeedback(PC, string(Service.Class.Name) $ ":", PC != None);
 			++NumLines;
 
-			for(j = 0; j < CurrentCommands.Length; ++j){
-				Services[i].CommandFeedback(PC, "  - " $ CurrentCommands[j], PC != None);
+			for(i = 0; i < CurrentCommands.Length; ++i){
+				Service.CommandFeedback(PC, "  - " $ CurrentCommands[i], PC != None);
 				++NumLines;
 			}
 
@@ -139,7 +128,7 @@ function bool DispatchCmd(PlayerController PC, string Cmd){
 }
 
 event bool ExecCmd(string Cmd, optional PlayerController PC){
-	local int i;
+	local AdminService Service;
 	local bool RecognizedCmd;
 	local string CommandSource;
 
@@ -158,8 +147,8 @@ event bool ExecCmd(string Cmd, optional PlayerController PC){
 	EventLog("(" $ CommandSource $ "): " $ Cmd, 'Command');
 
 	if((PC == None || PC.PlayerReplicationInfo.bAdmin) && Cmd ~= "SAVECONFIG"){
-		for(i = 0; i < Services.Length; ++i)
-			Services[i].SaveConfig();
+		for(Service = Services; Service != None; Service = Service.nextAdminService)
+			Service.SaveConfig();
 
 		SaveConfig();
 
@@ -192,7 +181,7 @@ cpptext
 defaultproperties
 {
 	bHidden=true
-	EventLogFile="../Save/ServerEvents.log"
+	EventLogFile="ServerEvents.log"
 	AppendEventLog=true
 	EventLogTimestamp=true
 	ServiceClasses(0)="ModMPGame.AdminAuthentication"
